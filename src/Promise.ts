@@ -8,10 +8,14 @@ export class Promise{
         executor(()=>{this.resolve();}, ()=>{this.reject();});
     }
     private resolve(): void{
-        this.status_ = PromiseStatus.RESOLVED;
+        if(this.status_=== PromiseStatus.PENDING){
+            this.status_ = PromiseStatus.RESOLVED;
+        }
     }
     private reject(): void{
-        this.status_ = PromiseStatus.REJECTED;
+        if(this.status_ === PromiseStatus.PENDING){
+            this.status_ = PromiseStatus.REJECTED;
+        }
     }
     then(){
     }

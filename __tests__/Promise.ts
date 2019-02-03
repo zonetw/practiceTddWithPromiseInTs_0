@@ -34,5 +34,26 @@ describe("1. Basic Test", ()=>{
         });
         expect(promise.status).toEqual(PromiseStatus.PENDING);
     });
-    
+
+    it("Promise will not change status after complete(reject)", (done)=>{
+        let promise = new Promise((resolve, reject)=>{
+            process.nextTick(()=>{
+                reject();
+                resolve();
+                expect(promise.status).toEqual(PromiseStatus.REJECTED);
+                done();
+            });
+        });
+    });
+
+    it("Promise will not change status after complete(resolve)", (done)=>{
+        let promise = new Promise((resolve, reject)=>{
+            process.nextTick(()=>{
+                resolve();
+                reject();
+                expect(promise.status).toEqual(PromiseStatus.RESOLVED);
+                done();
+            });
+        });
+    });
 });
