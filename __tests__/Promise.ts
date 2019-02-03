@@ -13,22 +13,26 @@ describe("1. Basic Test", ()=>{
         expect(typeof promise.then).toEqual("function");
     });
 
-    it("Promise will call resolve function when fulfilled", (done)=>{
+    it("Promise will call resolve function when fulfilled, and change status to resolved", (done)=>{
         let promise = new Promise((resolve, reject)=>{
             process.nextTick(()=>{
                 resolve();
+                expect(promise.status).toEqual(PromiseStatus.RESOLVED);
                 done();
             });
         });
+        expect(promise.status).toEqual(PromiseStatus.PENDING);
     });
 
-    it("Promise will call reject function when failed", (done)=>{
+    it("Promise will call reject function when failed, and change status to rejected", (done)=>{
         let promise = new Promise((resolve, reject)=>{
             process.nextTick(()=>{
                 reject();
+                expect(promise.status).toEqual(PromiseStatus.REJECTED);
                 done();
             });
         });
+        expect(promise.status).toEqual(PromiseStatus.PENDING);
     });
     
 });
