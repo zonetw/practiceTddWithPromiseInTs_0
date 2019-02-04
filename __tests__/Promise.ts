@@ -94,6 +94,16 @@ describe("2. Thenable Test", ()=>{
         });
     });
 
+    it("test then and catch mix situation: reject ( sync )", ()=>{
+        let promise = new Promise((resolve, reject)=>{
+            reject(1);
+        }).then((result)=>{
+            return 2;
+        }).catch((reason)=>{
+            expect(reason).toEqual(1);
+        });
+    });
+
     it("the previous result will pass to next then method ( async )", (done)=>{
         let promise = new Promise((resolve, reject)=>{
             process.nextTick(()=>{

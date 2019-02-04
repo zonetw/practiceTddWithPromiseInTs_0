@@ -51,15 +51,22 @@ export class Promise{
     then(onFulfillAction: (result: any)=>any): Promise{
         let returnedPromise: Promise = this;
         let resultOfFulfillAction: any;
-        if(this._status === PromiseStatus.PENDING){
-            this._onFulfillActions.push(onFulfillAction);
-        }else{
-            resultOfFulfillAction = onFulfillAction(this._value);
-            if(resultOfFulfillAction instanceof Promise){
-                returnedPromise = resultOfFulfillAction;
-            }else{
-                this._value = resultOfFulfillAction;
-            }
+
+        switch(this._status){
+            case PromiseStatus.PENDING:
+                this._onFulfillActions.push(onFulfillAction);
+                break;
+            case PromiseStatus.RESOLVED:
+                resultOfFulfillAction = onFulfillAction(this._value);
+                if(resultOfFulfillAction instanceof Promise){
+                    returnedPromise = resultOfFulfillAction;
+                }else{
+                    this._value = resultOfFulfillAction;
+                }
+                break;
+            case PromiseStatus.REJECTED:
+                // do nothing
+                break;
         }
         return returnedPromise;
     }
