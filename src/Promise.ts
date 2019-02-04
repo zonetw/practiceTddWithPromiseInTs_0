@@ -73,15 +73,22 @@ export class Promise{
     catch(onFailedAction: (reason: any)=>any): Promise{
         let returnedPromise: Promise = this;
         let resultOfFailedAction: any;
-        if(this._status === PromiseStatus.PENDING){
-            this._onFailedActions.push(onFailedAction);
-        }else{
-            resultOfFailedAction = onFailedAction(this._value);
-            if(resultOfFailedAction instanceof Promise){
-                returnedPromise = resultOfFailedAction;
-            }else{
-                this._value = resultOfFailedAction;
-            }
+
+        switch(this._status){
+            case PromiseStatus.PENDING:
+                this._onFailedActions.push(onFailedAction);
+                break;
+            case PromiseStatus.REJECTED:
+                resultOfFailedAction = onFailedAction(this._value);
+                if(resultOfFailedAction instanceof Promise){
+                    returnedPromise = resultOfFailedAction;
+                }else{
+                    this._value = resultOfFailedAction;
+                }
+                break;
+            case PromiseStatus.RESOLVED:
+                // do nothing
+                break;
         }
         return returnedPromise;
     }

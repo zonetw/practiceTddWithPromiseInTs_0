@@ -94,6 +94,16 @@ describe("2. Thenable Test", ()=>{
         });
     });
 
+    it("test then and catch mix situation: resolve ( sync )", ()=>{
+        let promise = new Promise((resolve, reject)=>{
+            resolve(1);
+        }).catch((reason)=>{
+            return 2;
+        }).then((result)=>{
+            expect(result).toEqual(1);
+        });
+    });
+
     it("test then and catch mix situation: reject ( sync )", ()=>{
         let promise = new Promise((resolve, reject)=>{
             reject(1);
