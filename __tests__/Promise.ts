@@ -138,4 +138,54 @@ describe("2. Thenable Test", ()=>{
             done();
         });
     });
+
+    it("mix then and catch, resolve ( async )", (done)=>{
+        let promise = new Promise((resolve, reject)=>{
+            process.nextTick(()=>{
+                resolve(1);
+            });
+        }).catch((reason)=>{
+            return new Promise((resolve, reject)=>{
+                process.nextTick(()=>{
+                    resolve(2);
+                });
+            });
+        }).then((result)=> {
+            expect(result).toEqual(1);
+
+            return new Promise((resolve, reject) => {
+                process.nextTick(() => {
+                    resolve(3);
+                });
+            });
+        }).then((result)=>{
+            expect(result).toEqual(3);
+            done();
+        });
+    });
+
+    it("mix then and catch, reject ( async )", (done)=>{
+        let promise = new Promise((resolve, reject)=>{
+            process.nextTick(()=>{
+                reject(1);
+            });
+        }).then((result)=>{
+            return new Promise((resolve, reject)=>{
+                process.nextTick(()=>{
+                    reject(2);
+                });
+            });
+        }).catch((reason)=> {
+            expect(reason).toEqual(1);
+
+            return new Promise((resolve, reject) => {
+                process.nextTick(() => {
+                    reject(3);
+                });
+            });
+        }).catch((reason)=>{
+            expect(reason).toEqual(3);
+            done();
+        });
+    });
 });
