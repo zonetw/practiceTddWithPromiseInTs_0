@@ -8,6 +8,14 @@ describe("1. Basic Test", ()=>{
         expect(promise.status).toEqual(PromiseStatus.PENDING);
     });
 
+    it("Catch the error occur when executing the executor function ( sync )", ()=>{
+        let promise = new Promise((resolve, reject)=>{
+            throw new Error("Error on purpose");
+        }).catch((reason)=>{
+            expect(reason.toString()).toEqual("Error: Error on purpose");
+        });
+    });
+
     it("Promise is an object or function with a then method whose behavior conforms to this specification", ()=>{
         let promise = new Promise((resolve, reject)=>{});
         expect(typeof promise.then).toEqual("function");

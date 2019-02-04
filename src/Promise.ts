@@ -12,7 +12,11 @@ export class Promise{
         this._onFulfillActions = [];
         this._onFailedActions = [];
 
-        executor((result)=>{this.resolve(result);}, (reason)=>{this.reject(reason);});
+        try{
+            executor((result)=>{this.resolve(result);}, (reason)=>{this.reject(reason);});
+        }catch(e){
+            this.reject(e);
+        }
     }
     private resolve(result?: any): void{
         if(this._status=== PromiseStatus.PENDING){
