@@ -72,4 +72,29 @@ describe("2. Thenable Test", ()=>{
             done();
         });
     });
+
+    it("the previous result will pass to next then method ( async )", (done)=>{
+        let promise = new Promise((resolve, reject)=>{
+            process.nextTick(()=>{
+                resolve(1);
+            });
+        }).then((result)=>{
+            return new Promise((resolve, reject)=>{
+                process.nextTick(()=>{
+                    expect(result).toEqual(1);
+                    resolve(2);
+                });
+            });
+        }).then((result)=> {
+            return new Promise((resolve, reject) => {
+                process.nextTick(() => {
+                    expect(result).toEqual(2);
+                    resolve(3);
+                });
+            });
+        }).then((result)=>{
+            expect(result).toEqual(3);
+            done();
+        });
+    });
 });

@@ -17,9 +17,15 @@ export class Promise{
             this._status = PromiseStatus.RESOLVED;
             this._value = result;
 
-            let tmpAction;
-            while(tmpAction = this._onFulfillActions.shift()){
+            let tmpAction: Function;
+            while(tmpAction = <Function>this._onFulfillActions.shift()){
                 this._value = tmpAction(this._value);
+                if(this._value instanceof Promise){
+                    this._onFulfillActions.forEach((actions)=>{
+                        this._value.then(actions);
+                    });
+                  break;
+                }
             }
         }
     }
