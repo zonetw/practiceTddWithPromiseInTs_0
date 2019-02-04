@@ -59,6 +59,18 @@ describe("1. Basic Test", ()=>{
 });
 
 describe("2. Thenable Test", ()=>{
+    it("the previous result will pass to next then method when instant complete ( sync )", (done)=>{
+        let promise = new Promise((resolve, reject)=>{
+            resolve(1);
+        }).then((result)=>{
+            expect(result).toEqual(1);
+            return 2;
+        }).then((result)=>{
+            expect(result).toEqual(2);
+            done();
+        });
+    });
+
     it("the previous result will pass to next then method ( sync )", (done)=>{
         let promise = new Promise((resolve, reject)=>{
             process.nextTick(()=>{

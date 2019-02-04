@@ -35,8 +35,19 @@ export class Promise{
         }
     }
     then(onFulfillAction: (result: any)=>any): Promise{
-        this._onFulfillActions.push(onFulfillAction);
-        return this;
+        let returnedPromise: Promise = this;
+        let resultOfFulfillAction: any;
+        if(this._status === PromiseStatus.PENDING){
+            this._onFulfillActions.push(onFulfillAction);
+        }else{
+            resultOfFulfillAction = onFulfillAction(this._value);
+            if(resultOfFulfillAction instanceof Promise){
+                returnedPromise = resultOfFulfillAction;
+            }else{
+                this._value = resultOfFulfillAction;
+            }
+        }
+        return returnedPromise;
     }
 
     public get status():PromiseStatus{
