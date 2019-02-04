@@ -5,10 +5,12 @@ export class Promise{
     private _value: any;
 
     private _onFulfillActions: Function[];
+    private _onFailedActions: Function[];
 
     constructor(executor: (callbackWhenResolve: (result?: any)=>void, callbackWhenReject: (reject?: any)=>void)=>void){
         this._status = PromiseStatus.PENDING;
         this._onFulfillActions = [];
+        this._onFailedActions = [];
 
         executor((result)=>{this.resolve(result);}, (reason)=>{this.reject(reason);});
     }
@@ -32,6 +34,18 @@ export class Promise{
     private reject(reason?: any): void{
         if(this._status === PromiseStatus.PENDING){
             this._status = PromiseStatus.REJECTED;
+            this._value = reason;
+
+            let tmpAction: Function;
+            while(tmpAction = <Function>this._onFailedActions.shift()){
+                this._value = tmpAction(this._value);
+                if(this._value instanceof Promise){
+                    this._onFailedActions.forEach((actions)=>{
+                        this._value.catch(actions);
+                    });
+                    break;
+                }
+            }
         }
     }
     then(onFulfillAction: (result: any)=>any): Promise{
@@ -45,6 +59,21 @@ export class Promise{
                 returnedPromise = resultOfFulfillAction;
             }else{
                 this._value = resultOfFulfillAction;
+            }
+        }
+        return returnedPromise;
+    }
+    catch(onFailedAction: (reason: any)=>any): Promise{
+        let returnedPromise: Promise = this;
+        let resultOfFailedAction: any;
+        if(this._status === PromiseStatus.PENDING){
+            this._onFailedActions.push(onFailedAction);
+        }else{
+            resultOfFailedAction = onFailedAction(this._value);
+            if(resultOfFailedAction instanceof Promise){
+                returnedPromise = resultOfFailedAction;
+            }else{
+                this._value = resultOfFailedAction;
             }
         }
         return returnedPromise;

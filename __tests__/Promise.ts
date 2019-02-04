@@ -70,6 +70,17 @@ describe("2. Thenable Test", ()=>{
         });
     });
 
+    it("the previous reason will pass to next catch method when instant complete ( sync )", ()=>{
+        let promise = new Promise((resolve, reject)=>{
+            reject(1);
+        }).catch((reason)=>{
+            expect(reason).toEqual(1);
+            return 2
+        }).catch((reason)=>{
+            expect(reason).toEqual(2);
+        });
+    });
+
     it("the previous result will pass to next then method ( sync )", ()=>{
         let promise = new Promise((resolve, reject)=>{
             process.nextTick(()=>{
