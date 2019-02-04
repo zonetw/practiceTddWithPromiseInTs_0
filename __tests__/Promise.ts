@@ -59,20 +59,14 @@ describe("1. Basic Test", ()=>{
 });
 
 describe("2. Thenable Test", ()=>{
-    it("Promise can be chained and pass result to next then method", (done)=>{
+    it("the previous result will pass to next then method ( sync )", (done)=>{
         let promise = new Promise((resolve, reject)=>{
             process.nextTick(()=>{
-                resolve(promise.id);
-            })
-        });
-
-        promise.then((result)=>{
-            expect(result).toEqual(1);
-            let promiseInThen1 = new Promise((resolve, reject)=>{
-                process.nextTick(()=>{
-                    resolve(promiseInThen1.id);
-                });
+                resolve(1);
             });
+        }).then((result)=>{
+            expect(result).toEqual(1);
+            return 2;
         }).then((result)=>{
             expect(result).toEqual(2);
             done();

@@ -2,23 +2,35 @@ import {PromiseStatus} from "./PromiseStatus";
 
 export class Promise{
     private _status: PromiseStatus;
+    private _value: any;
+
+    private _onFulfillActions: Function[];
 
     constructor(executor: (callbackWhenResolve: (result?: any)=>void, callbackWhenReject: (reject?: any)=>void)=>void){
         this._status = PromiseStatus.PENDING;
+        this._onFulfillActions = [];
 
-        executor(()=>{this.resolve();}, ()=>{this.reject();});
+        executor((result)=>{this.resolve(result);}, (reason)=>{this.reject(reason);});
     }
-    private resolve(): void{
-        if(this.status_=== PromiseStatus.PENDING){
-            this.status_ = PromiseStatus.RESOLVED;
+    private resolve(result?: any): void{
+        if(this._status=== PromiseStatus.PENDING){
+            this._status = PromiseStatus.RESOLVED;
+            this._value = result;
+
+            let tmpAction;
+            while(tmpAction = this._onFulfillActions.shift()){
+                this._value = tmpAction(this._value);
+            }
         }
     }
-    private reject(): void{
+    private reject(reason?: any): void{
         if(this._status === PromiseStatus.PENDING){
             this._status = PromiseStatus.REJECTED;
         }
     }
-    then(){
+    then(onFulfillAction: (result: any)=>any): Promise{
+        this._onFulfillActions.push(onFulfillAction);
+        return this;
     }
 
     public get status():PromiseStatus{
