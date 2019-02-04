@@ -78,6 +78,19 @@ describe("2. Thenable Test", ()=>{
         });
     });
 
+    it("catch error in then method", (done)=>{
+        let promise = new Promise((resolve, reject)=>{
+            process.nextTick(()=>{
+                resolve(1);
+            });
+        }).then((reason)=>{
+            expect(reason).toEqual(1);
+            throw new Error();
+        }).catch((reason)=>{
+            done();
+        })
+    });
+
     it("the previous reason will pass to next catch method when instant complete ( sync )", ()=>{
         let promise = new Promise((resolve, reject)=>{
             reject(1);
@@ -197,3 +210,4 @@ describe("2. Thenable Test", ()=>{
         });
     });
 });
+

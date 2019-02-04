@@ -20,24 +20,28 @@ export class Promise{
     }
     private resolve(result?: any): void{
         if(this._status=== PromiseStatus.PENDING){
-            this._status = PromiseStatus.RESOLVED;
             this._value = result;
 
             let tmpAction: Function;
             while(tmpAction = <Function>this._onFulfillActions.shift()){
-                this._value = tmpAction(this._value);
-                if(this._value instanceof Promise){
-                    this._onFulfillActions.forEach((actions)=>{
-                        this._value.then(actions);
-                    });
-                  break;
+                try{
+                    this._value = tmpAction(this._value);
+                    if(this._value instanceof Promise){
+                        this._onFulfillActions.forEach((actions)=>{
+                            this._value.then(actions);
+                        });
+                      break;
+                    }
+                }catch(e){
+                    this.reject(e);
+                    break;
                 }
             }
+            this._status = PromiseStatus.RESOLVED;
         }
     }
     private reject(reason?: any): void{
         if(this._status === PromiseStatus.PENDING){
-            this._status = PromiseStatus.REJECTED;
             this._value = reason;
 
             let tmpAction: Function;
@@ -50,6 +54,7 @@ export class Promise{
                     break;
                 }
             }
+            this._status = PromiseStatus.REJECTED;
         }
     }
     then(onFulfillAction: (result: any)=>any): Promise{
